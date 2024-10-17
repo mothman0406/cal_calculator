@@ -4,42 +4,128 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BMR Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            color: #333;
+        }
+        label {
+            margin-top: 10px;
+            display: block;
+        }
+        input, select, button {
+            margin-bottom: 15px;
+            padding: 10px;
+            width: 100%;
+            max-width: 300px;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .error {
+            color: red;
+        }
+        .success {
+            color: green;
+        }
+    </style>
+    <script>
+        function toggleHeightInput() {
+            const unitSystem = document.querySelector('select[name="unit_system"]').value;
+            const feetInchesDiv = document.getElementById('height-feet-inches');
+            const centimetersDiv = document.getElementById('height-centimeters');
+
+            if (unitSystem === 'customary') {
+                feetInchesDiv.style.display = 'block';
+                centimetersDiv.style.display = 'none';
+            } else {
+                feetInchesDiv.style.display = 'none';
+                centimetersDiv.style.display = 'block';
+            }
+        }
+
+        function toggleWeightInput() {
+            const weightUnit = document.querySelector('select[name="weight_unit"]').value;
+            const weightLabel = document.getElementById('weight-label');
+
+            if (weightUnit === 'pounds') {
+                weightLabel.textContent = 'Weight (Pounds):';
+            } else {
+                weightLabel.textContent = 'Weight (Kilograms):';
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            toggleHeightInput();
+            toggleWeightInput();
+        });
+    </script>
 </head>
 <body>
     <h1>BMR Calculator</h1>
-    <form method="POST">
-        <label for="age">Age (years):</label>
-        <input type="number" name="age" required><br>
+    
+    {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+            <ul>
+            {% for category, message in messages %}
+                <li class="{{ category }}">{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+    
+    <form method="POST" action="/">
+        <label for="age">Age:</label>
+        <input type="number" name="age" required min="1"><br>
+        
+        <label for="weight_unit">Weight Unit:</label>
+        <select name="weight_unit" onchange="toggleWeightInput()">
+            <option value="kilograms">Kilograms</option>
+            <option value="pounds">Pounds</option>
+        </select><br>
+        
+        <label id="weight-label" for="weight">Weight (Kilograms):</label>
+        <input type="number" name="weight" required min="1"><br>
+        
+        <label for="unit_system">Unit System for Height:</label>
+        <select name="unit_system" onchange="toggleHeightInput()">
+            <option value="customary">Customary (Feet and Inches)</option>
+            <option value="metric">Metric (Centimeters)</option>
+        </select><br>
+        
+        <!-- Feet and inches input (visible only when customary is selected) -->
+        <div id="height-feet-inches">
+            <label for="height_feet">Height (Feet):</label>
+            <input type="number" name="height_feet" min="0"><br>
+            <label for="height_inches">Height (Inches):</label>
+            <input type="number" name="height_inches" min="0" max="11"><br>
+        </div>
 
-        <label for="weight">Weight (kg or lbs):</label>
-        <input type="number" name="weight" required><br>
+        <!-- Centimeters input (visible only when metric is selected) -->
+        <div id="height-centimeters">
+            <label for="height_cm">Height (Centimeters):</label>
+            <input type="number" name="height_cm" min="1"><br>
+        </div>
 
         <label for="gender">Gender:</label>
-        <select name="gender" required>
+        <select name="gender">
             <option value="male">Male</option>
             <option value="female">Female</option>
         </select><br>
-
-        <label for="unit_system">Unit System:</label>
-        <select name="unit_system" id="unit_system" required>
-            <option value="metric">Metric (cm, kg)</option>
-            <option value="customary">Customary (ft, in, lbs)</option>
-        </select><br>
-
-        <div id="height_metric">
-            <label for="height">Height (cm):</label>
-            <input type="number" name="height"><br>
-        </div>
-
-        <div id="height_customary" style="display: none;">
-            <label for="height_feet">Height (feet):</label>
-            <input type="number" name="height_feet" required><br>
-            <label for="height_inches">Height (inches):</label>
-            <input type="number" name="height_inches" required><br>
-        </div>
-
+        
         <label for="activity_level">Activity Level:</label>
-        <select name="activity_level" required>
+        <select name="activity_level">
             <option value="sedentary">Sedentary</option>
             <option value="lightly active">Lightly Active</option>
             <option value="moderately active">Moderately Active</option>
@@ -47,45 +133,22 @@
             <option value="super active">Super Active</option>
         </select><br>
 
-        <input type="submit" value="Calculate BMR">
+        <button type="submit">Calculate BMR</button>
     </form>
 
     {% if bmr %}
-        <h2>Your BMR: {{ bmr }} calories</h2>
-        <h3>Caloric Needs:</h3>
-        <ul>
-            <li>Maintain Weight: {{ caloric_needs['maintain'] }} calories</li>
-            <li>Lose Weight Slowly: {{ caloric_needs['lose_weight_slowly'] }} calories</li>
-            <li>Lose Weight Quickly: {{ caloric_needs['lose_weight_quickly'] }} calories</li>
-            <li>Gain Weight Slowly: {{ caloric_needs['gain_weight_slowly'] }} calories</li>
-            <li>Gain Weight Quickly: {{ caloric_needs['gain_weight_quickly'] }} calories</li>
-        </ul>
+        <h2>Your BMR: {{ bmr }} calories/day</h2>
     {% endif %}
 
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <ul>
-            {% for message in messages %}
-                <li>{{ message }}</li>
-            {% endfor %}
-            </ul>
-        {% endif %}
-    {% endwith %}
-    
-    <script>
-        const unitSystemSelect = document.getElementById('unit_system');
-        const heightMetric = document.getElementById('height_metric');
-        const heightCustomary = document.getElementById('height_customary');
-
-        unitSystemSelect.addEventListener('change', function() {
-            if (this.value === 'customary') {
-                heightMetric.style.display = 'none';
-                heightCustomary.style.display = 'block';
-            } else {
-                heightMetric.style.display = 'block';
-                heightCustomary.style.display = 'none';
-            }
-        });
-    </script>
+    {% if caloric_needs %}
+        <h3>Caloric Needs:</h3>
+        <ul>
+            <li>Maintain weight: {{ caloric_needs['maintain'] }}</li>
+            <li>Lose weight slowly: {{ caloric_needs['lose_weight_slowly'] }}</li>
+            <li>Lose weight quickly: {{ caloric_needs['lose_weight_quickly'] }}</li>
+            <li>Gain weight slowly: {{ caloric_needs['gain_weight_slowly'] }}</li>
+            <li>Gain weight quickly: {{ caloric_needs['gain_weight_quickly'] }}</li>
+        </ul>
+    {% endif %}
 </body>
 </html>
