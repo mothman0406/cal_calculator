@@ -89,7 +89,13 @@ def index():
                 flash('Invalid activity level selected. Please choose a valid option.', 'error')
                 return render_template('index.html')
 
-            return render_template('index.html', bmr=bmr, caloric_needs=caloric_needs)
+            return render_template('index.html', bmr=bmr, caloric_needs=caloric_needs,
+                                   age=age, weight=weight, weight_unit=weight_unit,
+                                   gender=gender, unit_system=unit_system,
+                                   height_feet=height_feet if unit_system == 'customary' else None,
+                                   height_inches=height_inches if unit_system == 'customary' else None,
+                                   height_cm=height if unit_system == 'metric' else None,
+                                   activity_level=activity_level)
 
         except ValueError:
             flash('Invalid input. Please enter numeric values for age, weight, and height.', 'error')
