@@ -40,6 +40,7 @@
             color: green;
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         function toggleHeightInput() {
             const unitSystem = document.querySelector('select[name="unit_system"]').value;
@@ -69,12 +70,6 @@
         function clearForm() {
             // Reset the form to its initial state
             document.querySelector('form').reset();
-
-            // Clear any input fields
-            const inputs = document.querySelectorAll('input[type="number"]');
-            inputs.forEach(input => input.value = '');
-
-            // Reset the select inputs
             toggleHeightInput();
             toggleWeightInput();
         }
@@ -160,6 +155,46 @@
         <li>Gain Weight Slowly: {{ caloric_needs.gain_weight_slowly }} calories/day</li>
         <li>Gain Weight Quickly: {{ caloric_needs.gain_weight_quickly }} calories/day</li>
     </ul>
+
+    <!-- Optional goal setting -->
+    <p><a href="{{ url_for('select_goal') }}">Set a Calorie Goal and Create a Meal Plan</a></p>
+
+    <!-- Chart.js canvas element for the caloric needs chart -->
+    <canvas id="calorieChart" width="400" height="200"></canvas>
+
+    <script>
+        // JavaScript for rendering the chart
+        const caloricNeedsData = {
+            maintain: {{ caloric_needs.maintain }},
+            loseWeightSlowly: {{ caloric_needs.lose_weight_slowly }},
+            loseWeightQuickly: {{ caloric_needs.lose_weight_quickly }},
+            gainWeightSlowly: {{ caloric_needs.gain_weight_slowly }},
+            gainWeightQuickly: {{ caloric_needs.gain_weight_quickly }}
+        };
+
+        const ctx = document.getElementById('calorieChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Maintain', 'Lose Slowly', 'Lose Quickly', 'Gain Slowly', 'Gain Quickly'],
+                datasets: [{
+                    label: 'Caloric Needs (Calories/day)',
+                    data: Object.values(caloricNeedsData),
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                responsive: true
+            }
+        });
+    </script>
     {% endif %}
 </body>
 </html>

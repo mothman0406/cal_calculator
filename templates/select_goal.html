@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Select Your Goal</title>
+</head>
+<body>
+    <h2>Select Your Goal</h2>
+    <form method="POST" action="{{ url_for('select_goal') }}">
+        <label for="goal">Choose a goal:</label>
+        <select name="goal" id="goal">
+            <option value="maintain">Maintain Weight</option>
+            <option value="lose_weight_slowly">Lose Weight Slowly</option>
+            <option value="lose_weight_quickly">Lose Weight Quickly</option>
+            <option value="gain_weight_slowly">Gain Weight Slowly</option>
+            <option value="gain_weight_quickly">Gain Weight Quickly</option>
+        </select>
+        <button type="submit">Set Goal</button>
+    </form>
+</body>
+</html>

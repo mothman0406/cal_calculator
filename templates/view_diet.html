@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Your Diet</h1>
+
+{% if diet %}
+    <ul>
+        {% for item in diet %}
+            <li>
+                {{ item.name }} - {{ item.quantity }} {{ item.unit }} - {{ item.calories }} calories
+                <form method="post" action="{{ url_for('remove_single', item_index=loop.index0) }}" style="display:inline;">
+                    <button type="submit">Remove</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+    <p><strong>Total Calories:</strong> {{ total_calories }} calories</p>
+
+    <form method="post" action="{{ url_for('remove_all') }}">
+        <button type="submit">Remove All</button>
+    </form>
+
+    {% if calorie_goal %}
+        <p><strong>Calories Left:</strong> {{ calorie_goal - total_calories }} calories</p>
+    {% else %}
+        <p>Set your calorie goal from the homepage.</p>
+    {% endif %}
+{% else %}
+    <p>Your diet is empty.</p>
+{% endif %}
+
+<p><a href="{{ url_for('meal_plan') }}">Back to Meal Plan</a></p>
+<p><a href="{{ url_for('index') }}">Home</a></p>
+
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Create Your Meal Plan</h1>
+
+<form method="post" action="{{ url_for('meal_plan') }}">
+    {% if food_items %}
+        <ul>
+            {% for item in food_items %}
+                <li><strong>{{ item.name }}</strong> - {{ item.calories }} calories per {{ item.serving_size }}
+                    <input type="number" name="quantity-{{ item.id }}" placeholder="Quantity in grams" min="1">
+                    <select name="unit-{{ item.id }}">
+                        <option value="grams">grams</option>
+                        <option value="ounces">ounces</option>
+                        <option value="servings">servings</option>
+                    </select>
+                    <button type="submit" name="add_to_diet" value="{{ item.id }}">Add to Diet</button>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No food items available.</p>
+    {% endif %}
+</form>
+
+<form method="post" action="{{ url_for('remove_all') }}">
+    <button type="submit">Remove All</button>
+</form>
+
+<h2>Today's Diet</h2>
+{% if diet %}
+    <ul>
+        {% for item in diet %}
+            <li>
+                {{ item.name }} - {{ item.quantity }} {{ item.unit }} - {{ item.calories }} calories
+                <form method="post" action="{{ url_for('remove_single', item_index=loop.index0) }}" style="display:inline;">
+                    <button type="submit">Remove</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+    <p><strong>Total Calories:</strong> {{ total_calories }} calories</p>
+    {% if calorie_goal %}
+        <p><strong>Calories Left:</strong> {{ calorie_goal - total_calories }} calories</p>
+    {% else %}
+        <p>Set your calorie goal from the homepage.</p>
+    {% endif %}
+{% else %}
+    <p>Your diet is empty.</p>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Search for Food</title>
+</head>
+<body>
+    <h1>Search for Food</h1>
+    <form action="{{ url_for('search_food') }}" method="post">
+        <label for="query">Enter a food name:</label>
+        <input type="text" name="query" id="query" required>
+        <button type="submit">Search</button>
+    </form>
+</body>
+</html>
