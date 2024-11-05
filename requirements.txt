@@ -11,4 +11,5 @@ Werkzeug==3.0.4
 zipp==3.20.2
 Flask-SQLAlchemy==3.0.0
 Flask-Migrate==4.0.4
-requests==2.31.0  # To interact with the USDA API
+requests==2.31.0
+SQLAlchemy==1.4.49
