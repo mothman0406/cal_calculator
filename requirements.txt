@@ -9,3 +9,5 @@ MarkupSafe==3.0.1
 packaging==24.1
 Werkzeug==3.0.4
 zipp==3.20.2
+Flask-SQLAlchemy
+
